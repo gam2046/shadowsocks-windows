@@ -1,14 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shadowsocks.Controller;
-using Shadowsocks.Extra;
 using Shadowsocks.Model;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shadowsocks.Extra.Tests
 {
@@ -29,11 +22,11 @@ namespace Shadowsocks.Extra.Tests
             Debug.WriteLine("Before Total Count -> " + controller.GetConfigurationCopy().configs.Count);
             
             servers.updateFreeServers();
-
+            System.Threading.Thread.Sleep(5000); // wait for thread worked.
             Debug.WriteLine("Len\tServer\tPort\tPassword\tMethod");
             foreach(Server server in controller.GetConfigurationCopy().configs)
             {
-                Debug.WriteLine(string.Format("{4}\t'{0}'\t{1}\t{2}\t{3}"
+                Debug.WriteLine(string.Format("{4}\t{0}\t{1}\t{2}\t{3}"
                     , server.server
                     , server.server_port
                     , server.password
