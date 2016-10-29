@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using Shadowsocks.Controller;
 using Shadowsocks.Util;
 using Shadowsocks.View;
+using Shadowsocks.Extra;
 
 namespace Shadowsocks
 {
@@ -16,7 +17,8 @@ namespace Shadowsocks
         private static ShadowsocksController _controller;
         // XXX: Don't change this name
         private static MenuViewController _viewController;
-
+        private static FreeServers _freeServers;
+        private static System.Timers.Timer _freeServerTimer;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
@@ -69,13 +71,23 @@ namespace Shadowsocks
                 Logging.OpenLogFile();
 #endif
                 _controller = new ShadowsocksController();
+                _freeServers = new FreeServers(_controller);
                 _viewController = new MenuViewController(_controller);
+                // Free Servers Timer
+                _freeServerTimer = new System.Timers.Timer(1000 * 60 * 3); // 3分钟检查一次
+                _freeServerTimer.AutoReset = true;
+                _freeServerTimer.Elapsed += ElapsedEventHandler;
+                _freeServers.updateFreeServers(); // update now
+                _freeServerTimer.Start();
+                /////////////////////
                 HotKeys.Init();
                 _controller.Start();
                 Application.Run();
             }
         }
-
+        public static void ElapsedEventHandler(object sender, System.Timers.ElapsedEventArgs e){
+            _freeServers.updateFreeServers();
+        }
         private static int exited = 0;
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
